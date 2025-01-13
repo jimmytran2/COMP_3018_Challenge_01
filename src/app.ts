@@ -79,7 +79,14 @@ app.post("/api/customers/:id/purchase", (req: Request, res: Response): void => {
 	const purchaseAmount: number = req.body.amount;
 	const storeLocation: string = req.body.storeLocation;
 
-	customer.points += Math.floor(purchaseAmount / 10);
+	let pointsEarned: number = Math.floor(purchaseAmount / 10);
+
+	if(storeLocation === customer.preferredStore){
+		pointsEarned = Math.floor(pointsEarned * 1.25);
+	}
+
+	customer.points = customer.points + pointsEarned;
+	// customer.points += Math.floor(purchaseAmount / 10);
 	customer.lastPurchaseDate = new Date().toISOString();
 
 	if (customer.points >= 750) {
@@ -89,6 +96,8 @@ app.post("/api/customers/:id/purchase", (req: Request, res: Response): void => {
 		customer.status = "SILVER";
 		customer.lastStatusChange = new Date().toISOString();
 	}
+	
+
 
 	res.json(customer);
 });
